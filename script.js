@@ -81,10 +81,10 @@ function checkWinner(){
     if (!isPlayer1){
         playStatus = player2Status;
     }
-    for (let [_, elem] of winResults.entries()){
-        let isWin = elem.every(v=> playStatus.indexOf(v) > -1)
+    for (const result of winResults){
+        let isWin = result.every(v=> playStatus.indexOf(v) > -1)
         if (isWin) {
-            return {"result":true, "winner":isPlayer1, "line":elem};
+            return {"result":true, "winner":isPlayer1, "line":result};
         }
     }
     return {"result":false};
