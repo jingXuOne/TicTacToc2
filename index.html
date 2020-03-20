@@ -5,10 +5,12 @@
     </head>
     <body>
         <div class="game">
-            <h1 align="center">Tic Tac Toc</h1>
-            <button type="button" onclick="startGame()" id="startButton">Start</button>
-            <div id="info">Player X Player O</div>
-            
+            <h1 style="text-align: center;">Tic Tac Toc</h1>
+            <div>
+              <button type="button" onclick="startGame()" id="startButton">Start</button>
+              <p id="info">Player1: X Player2: O</p>
+              <p id="detail"></p>
+            </div>
             <div class="board">
               <div class="square top left" id="0"></div>
               <div class="square top" id="1"></div>
