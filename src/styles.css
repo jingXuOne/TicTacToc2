@@ -1,7 +1,9 @@
 div {
     display: block;
 }
-
+h1{
+    text-align: center;
+}
 .game{
     width: 462px;
     height: 500px;
@@ -24,11 +26,11 @@ div {
     height: 30px;
 }
 
-.player1:before{
+.X:before{
     content:"X"
 }
 
-.player2:before{
+.O:before{
     content:"O"
 }
 #startButton{
@@ -54,7 +56,9 @@ div {
     font-size: 100px;
     text-align: center;
 }
-
+.square.winner {
+    background-color: yellow;
+}
 .square.left {
     clear: both;
     border-right-style: solid;    
