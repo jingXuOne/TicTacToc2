@@ -10,13 +10,14 @@ const winResults = [
 ];
 const symbols = {"player1": "X", "player2":"O"};
 
-var isPlayer1, board;
-var player1Status = [];
-var player2Status = [];
-var allSquares = document.getElementsByClassName("square");
-var startButton = document.getElementById("startButton");
-var clearButton = document.getElementById("clearButton");
-var infoP = document.getElementById("info");
+let isPlayer1;
+let board;
+let player1Status = [];
+let player2Status = [];
+const allSquares = document.getElementsByClassName("square");
+const startButton = document.getElementById("startButton");
+const clearButton = document.getElementById("clearButton");
+const infoP = document.getElementById("info");
 
 function clearGame(){
     board = Array(9).fill("");
@@ -27,8 +28,7 @@ function clearGame(){
     infoP.innerText = "Player1: X Player2: O";
     for (let i=0; i<allSquares.length;i++){
         allSquares[i].style.backgroundColor = "white";
-        allSquares[i].classList.remove("player1");
-        allSquares[i].classList.remove("player2");
+        allSquares[i].classList.remove("player1", "player2");
     }
 }
 
@@ -42,7 +42,7 @@ function startGame(){
 }
 
 function play(button){
-    let id = button.target.id;
+    let id = Number(button.target.id);
     let player = isPlayer1 ? "player1" : "player2";
     if (board[id] != ""){
         console.log("can't here");
@@ -51,17 +51,17 @@ function play(button){
     //complet status
     board[id] = symbols[player];
     if (isPlayer1){
-        player1Status.push(Number(id));
+        player1Status.push(id);
     }
     else{
-        player2Status.push(Number(id));
+        player2Status.push(id);
     }
     //update div with new class
     button.target.classList.add(player);
-    
+
     if (player1Status.length >= 3 || player2Status.length >= 3){
-        let win = checkWinner();
-        if (win["result"]){
+        const win = checkWinner();
+        if (win.result){
             gameOver(win);
             return;
         }
@@ -73,21 +73,22 @@ function play(button){
     //turn player
     isPlayer1 = !isPlayer1;
     player = isPlayer1 ? "player1" : "player2";
-    document.getElementById("info").innerText = symbols[player]+ " turn";
+    document.getElementById("info").innerText = `${symbols[player]} turn`;
 }
 
 function checkWinner(){
-    let playStatus = player1Status;
-    if (!isPlayer1){
-        playStatus = player2Status;
-    }
+    const playStatus = isPlayer1 ? player1Status : player2Status;
     for (const result of winResults){
-        let isWin = result.every(v=> playStatus.indexOf(v) > -1)
+        const isWin = result.every(v=> playStatus.indexOf(v) > -1)
         if (isWin) {
-            return {"result":true, "winner":isPlayer1, "line":result};
+            return {
+            	result: true,
+            	winner: isPlayer1,
+            	line:result
+            };
         }
     }
-    return {"result":false};
+    return { result: false };
 }
 
 function removeEventListeners(){
@@ -97,14 +98,14 @@ function removeEventListeners(){
     }
 }
 
-function gameOver(win){
+function gameOver({ line, winner }){
     //show line
-    for (let index of win["line"]){
+    for (let index of line){
         document.getElementById(index).style.backgroundColor = "yellow";
     }
     //show winner message
-    let player = win["winner"] ? "player1" : "player2";
-    infoP.innerText = player + " Win!! click start button to continuer.";
+    const player = winner ? "player1" : "player2";
+    infoP.innerText = `${player} Win!! click start button to continue.`;
     removeEventListeners();
     startButton.style.visibility = "visible";
     clearButton.style.visibility = "hidden";
