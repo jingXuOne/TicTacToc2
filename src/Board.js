@@ -1,5 +1,9 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import Square from "./Square";
+import StartButton from "./StartButton";
+import ClearButton from "./ClearButton";
+import GameInfo from "./GameInfo";
 
 const winResults = [
     [0,1,2],
@@ -18,16 +22,28 @@ export default class Board extends Component {
     this.state = {
       isStarted: false,
       isPlayerX: true,
-      squares: []
+      squares: [],
+      boardStatus: {
+          start : "visible",
+          clear: "hidden",
+          info: "Player1: X Player2: O"
+      }
     };
     this.startGame = this.startGame.bind(this);
     this.clearGame = this.clearGame.bind(this);
   }
 
   startGame() {
-    this.clearGame();
-    document.getElementById("startButton").style.visibility = "hidden";
-    document.getElementById("clearButton").style.visibility = "visible";
+    this.setState({
+        isStarted: true,
+        isPlayerX: true,
+        squares: Array(9).fill(""),
+        boardStatus: {
+            start: "hidden",
+            clear: "visible",
+            info: "Next Player X"
+        }
+    });
   }
 
   clearGame() {
@@ -35,33 +51,41 @@ export default class Board extends Component {
         isStarted: true,
         isPlayerX: true,
         squares: Array(9).fill(""),
-    },()=>{
-        document.getElementById("info").innerText = "Next Player X";
+        boardStatus: {
+            start: "hidden",
+            clear: "visible",
+            info: "Next Player X"
+        }
     });
   }
 
 gameOver({winner,winResult}){
     this.setState({
-        isStarted: false
+        isStarted: false,
+        boardStatus: {
+            start: "visible",
+            clear: "hidden",
+            info: `Player ${winner} Win! click start button to continuer.`
+        }
     }, () => {
         //show line
+        // let squareCount = ReactDOM.findDOMNode(Square);
+        // console.log("squareCount",squareCount);
         for (const index of winResult){
             document.getElementById(index).classList.add("winner");
         } 
-        document.getElementById("info").innerText = `Player ${winner} Win! click start button to continuer.`
-        document.getElementById("clearButton").style.visibility = "hidden";
-        document.getElementById("startButton").style.visibility = "visible";
     })
 }
 
 gameTie(){
     this.setState({
-        isStarted: false
-    }, () => {
-        document.getElementById("info").innerText = "Game Tie!! click start button to continuer.";
-        document.getElementById("clearButton").style.visibility = "hidden";
-        document.getElementById("startButton").style.visibility = "visible";
-    })
+        isStarted: false,
+        boardStatus: {
+            start: "visible",
+            clear: "hidden",
+            info: "Game Tie!! click start button to continuer."
+        }
+    });
 } 
 
 checkWinner(){
@@ -103,38 +127,37 @@ checkWinner(){
                     return;
                 }
                 this.setState(prevState => ({
-                    isPlayerX: !prevState.isPlayerX
-                }),()=>{
-                    const nextPlayer = this.state.isPlayerX ? "X": "O";
-                    document.getElementById("info").innerText = `Next Player ${nextPlayer}`;
-                });
-                
+                    isPlayerX: !prevState.isPlayerX,
+                    boardStatus: {
+                        info: `Next Player ${!this.state.isPlayerX ? "X": "O"}`
+                    }
+                }));
             }
     );
  }
 
   render() {
-    const squares = [...Array(9).keys()].map(value => (
-        <Square
-        onClick={() => this.handleSquareClick(value)}
-        player={this.state.squares[value]}
-        squareId={value}
-        key={value}
-      />
-    ))
+    
     return (
       <div className="game">
         <h1>Tic Tac Toe</h1>
         <div>
-          <button type="button" onClick={this.startGame} id="startButton">
-            Start
-          </button>
-          <button type="button" onClick={this.clearGame} id="clearButton">
-            Clear
-          </button>
-          <p id="info">Player1: X Player2: O</p>
+          <StartButton onClick={this.startGame} visibility={this.state.boardStatus.start}/>
+          <ClearButton onClick={this.clearGame} visibility={this.state.boardStatus.clear}/>
+          <GameInfo title={this.state.boardStatus.info}/>
         </div>
-        <div className="board">{squares}</div>
+
+        <div className="board">{
+            [...Array(9).keys()].map(value => (
+            <Square
+            ref="square"
+            onClick={() => this.handleSquareClick(value)}
+            player={this.state.squares[value]}
+            squareId={value}
+            key={value}
+        />
+    ))
+        }</div>
       </div>
     );
   }
